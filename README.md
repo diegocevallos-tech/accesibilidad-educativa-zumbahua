@@ -28,13 +28,13 @@ Una auditoría del registro administrativo oficial muestra:
 
 La matrícula registrada disminuye 51,2 %, mientras el número de docentes baja 8,8 %. Este resultado todavía no se interpreta como pérdida real de acceso: primero se comprobarán cambios de cobertura, definiciones administrativas, migración, cierres, fusiones y traslados de matrícula.
 
-## Atlas cartográfico preliminar
+## Serie de mapas
 
-[Abrir el atlas completo en PDF](atlas/atlas-zumbahua-2026.pdf)
+[Abrir la serie completa en PDF](serie-mapas/serie-mapas-zumbahua-2026.pdf)
 
-![Accesibilidad potencial a EGB](atlas/social/02_accesibilidad_egb.png)
+![Accesibilidad potencial por nivel educativo](serie-mapas/social/03_acceso_por_nivel.png)
 
-El atlas 2026 contiene ocho páginas sobre territorio, relieve, oferta por nivel, cambio de matrícula y tiempos potenciales por la red caminable. También incluye cinco tarjetas verticales listas para redes sociales en [`atlas/social/`](atlas/social/). Los mapas son preliminares: representan cobertura sobre la red de OpenStreetMap y todavía no cobertura de población censal.
+La serie 2026 reúne cinco láminas: portada, territorio, oferta por nivel, cambio de matrícula y accesibilidad potencial comparada. También incluye cuatro tarjetas verticales listas para redes sociales en [`serie-mapas/social/`](serie-mapas/social/). Los tiempos representan un escenario sobre la red caminable de OpenStreetMap; no son viajes observados ni cobertura de población censal.
 
 ## Diseño analítico
 
@@ -98,7 +98,7 @@ El detalle de licencias, fechas y limitaciones está en [docs/fuentes_datos.md](
 
 ## Estado
 
-La versión `0.2.0` incorpora un atlas cartográfico preliminar, coordenadas educativas reconstruidas, relieve SRTM y tiempos potenciales por red. La cobertura poblacional final se publicará cuando se integren sectores censales y concluya la validación de coordenadas y caminos.
+La versión `0.2.1` incorpora una serie cartográfica compacta, coordenadas educativas reconstruidas, relieve SRTM y tiempos potenciales por red. La cobertura poblacional final se publicará cuando se integren sectores censales y concluya la validación de coordenadas y caminos.
 
 ## Licencia y cita
 

@@ -20,13 +20,13 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import FancyBboxPatch, Rectangle
 
 ROOT = Path(__file__).resolve().parents[1]
-RAW = ROOT / "data" / "raw" / "atlas_cache"
-ATLAS = ROOT / "atlas"
-FIGURES = ATLAS / "figures"
-SOCIAL = ATLAS / "social"
-DATA = ATLAS / "data"
+RAW = ROOT / "data" / "raw" / "map_series_cache"
+SERIES = ROOT / "serie-mapas"
+FIGURES = SERIES / "figures"
+SOCIAL = SERIES / "social"
+DATA = SERIES / "data"
 
-PDF_PATH = ATLAS / "atlas-zumbahua-2026.pdf"
+PDF_PATH = SERIES / "serie-mapas-zumbahua-2026.pdf"
 SCHOOL_SEED = ROOT / "data" / "manual" / "school_inventory_seed.csv"
 TREND_FILE = ROOT / "reports" / "tables" / "enrollment_trend.csv"
 
@@ -83,7 +83,7 @@ OSM_MATCHES: dict[str, tuple[str, int, str]] = {
 
 
 @dataclass
-class AtlasData:
+class MapSeriesData:
     boundary: gpd.GeoDataFrame
     boundary_utm: gpd.GeoDataFrame
     schools: gpd.GeoDataFrame
@@ -121,7 +121,7 @@ def configure_style() -> None:
 
 
 def ensure_dirs() -> None:
-    for directory in (RAW, ATLAS, FIGURES, SOCIAL, DATA):
+    for directory in (RAW, SERIES, FIGURES, SOCIAL, DATA):
         directory.mkdir(parents=True, exist_ok=True)
 
 
@@ -130,7 +130,7 @@ def download(url: str, destination: Path) -> Path:
         return destination
     request = urllib.request.Request(
         url,
-        headers={"User-Agent": "zumbahua-access-atlas/0.2 (research; contact via GitHub)"},
+        headers={"User-Agent": "zumbahua-map-series/0.2 (research; contact via GitHub)"},
     )
     partial = destination.with_suffix(destination.suffix + ".part")
     with urllib.request.urlopen(request, timeout=180) as response, partial.open("wb") as out:
@@ -342,7 +342,7 @@ def prepare_network(
     return nodes, unique, pd.DataFrame(coverage_rows)
 
 
-def load_data() -> AtlasData:
+def load_data() -> MapSeriesData:
     boundary, education, graph, places = fetch_osm()
     country, province, canton = fetch_context()
     schools = build_schools(education)
@@ -356,7 +356,7 @@ def load_data() -> AtlasData:
     schools_utm = schools.to_crs("EPSG:32717")
     trend = pd.read_csv(TREND_FILE)
     coverage.to_csv(DATA / "cobertura_longitud_red_preliminar.csv", index=False)
-    return AtlasData(
+    return MapSeriesData(
         boundary,
         boundary_utm,
         schools,
@@ -403,7 +403,12 @@ def footer(fig: plt.Figure, page: int, source: str) -> None:
         transform=source_ax.transAxes,
     )
     fig.text(
-        0.945, 0.028, f"ATLAS ZUMBAHUA 2026  ·  {page:02d}", color=MUTED, fontsize=7, ha="right"
+        0.945,
+        0.028,
+        f"SERIE DE MAPAS · ZUMBAHUA 2026  ·  {page:02d}",
+        color=MUTED,
+        fontsize=7,
+        ha="right",
     )
 
 
@@ -443,7 +448,7 @@ def set_map_bounds(ax: plt.Axes, boundary: gpd.GeoDataFrame, pad: float = 0.025)
     ax.set_aspect("equal")
 
 
-def map_base(ax: plt.Axes, data: AtlasData, roads_alpha: float = 0.4) -> None:
+def map_base(ax: plt.Axes, data: MapSeriesData, roads_alpha: float = 0.4) -> None:
     data.boundary_utm.plot(ax=ax, color="#E9E4D8", edgecolor=NAVY, linewidth=1.2, zorder=1)
     data.roads.plot(ax=ax, color=ROAD, linewidth=0.35, alpha=roads_alpha, zorder=2)
     set_map_bounds(ax, data.boundary_utm)
@@ -497,7 +502,13 @@ def time_category(values: pd.Series) -> np.ndarray:
     return np.digitize(values.to_numpy(dtype=float), bins=[30, 60, 90], right=True)
 
 
-def access_map(ax: plt.Axes, data: AtlasData, level: str, title: str) -> None:
+def access_map(
+    ax: plt.Axes,
+    data: MapSeriesData,
+    level: str,
+    title: str,
+    title_fontsize: float = 12,
+) -> None:
     data.boundary_utm.plot(ax=ax, color="#EEE9DE", edgecolor=NAVY, linewidth=0.9, zorder=0)
     categories = time_category(data.roads[f"time_{level}"])
     for category, color in enumerate(TIME_COLORS):
@@ -516,7 +527,7 @@ def access_map(ax: plt.Axes, data: AtlasData, level: str, title: str) -> None:
     )
     set_map_bounds(ax, data.boundary_utm)
     clean_axis(ax)
-    ax.set_title(title, loc="left", color=NAVY, pad=8)
+    ax.set_title(title, loc="left", color=NAVY, pad=8, fontsize=title_fontsize)
 
 
 def save_page(fig: plt.Figure, pdf: PdfPages, name: str) -> None:
@@ -525,7 +536,7 @@ def save_page(fig: plt.Figure, pdf: PdfPages, name: str) -> None:
     plt.close(fig)
 
 
-def cover_page(data: AtlasData, pdf: PdfPages) -> None:
+def cover_page(data: MapSeriesData, pdf: PdfPages) -> None:
     fig = plt.figure(figsize=(11.69, 8.27), facecolor=NAVY)
     ax = fig.add_axes([0.53, 0.06, 0.45, 0.88])
     ax.set_facecolor(NAVY)
@@ -536,44 +547,31 @@ def cover_page(data: AtlasData, pdf: PdfPages) -> None:
     clean_axis(ax)
     ax.set_facecolor(NAVY)
 
-    fig.text(0.065, 0.82, "ATLAS PRELIMINAR · 2026", color=MINT, fontsize=10, weight="bold")
+    fig.text(0.065, 0.84, "SERIE DE MAPAS · 2026", color=MINT, fontsize=10, weight="bold")
     fig.text(
         0.065,
-        0.68,
+        0.66,
         "Accesibilidad\neducativa en\nZumbahua",
         color=WHITE,
-        fontsize=36,
+        fontsize=34,
         weight="bold",
         linespacing=0.95,
     )
     fig.text(
         0.065,
-        0.48,
-        (
-            "Reconstrucción cartográfica, cambio de la oferta\n"
-            "y accesibilidad potencial por red peatonal"
-        ),
+        0.39,
+        "Oferta educativa, cambio y accesibilidad potencial",
         color="#D7E5E5",
-        fontsize=12,
+        fontsize=11.5,
         linespacing=1.35,
     )
-    fig.text(
-        0.065, 0.23, "Diego Santiago Cevallos Valencia", color=WHITE, fontsize=11, weight="bold"
-    )
-    fig.text(0.065, 0.19, "Estudio reproducible desde gabinete", color=MINT, fontsize=9)
-    fig.text(
-        0.065,
-        0.07,
-        "Versión 0.2 · Resultados espaciales preliminares sujetos a validación censal y de campo",
-        color="#AFC3C8",
-        fontsize=7.5,
-    )
+    fig.text(0.065, 0.08, "Zumbahua · Pujilí · Cotopaxi · Ecuador", color="#AFC3C8", fontsize=8)
     pdf.savefig(fig, dpi=220, facecolor=NAVY)
     fig.savefig(FIGURES / "00_portada.png", dpi=220, facecolor=NAVY)
     plt.close(fig)
 
 
-def context_page(data: AtlasData, pdf: PdfPages) -> None:
+def context_page(data: MapSeriesData, pdf: PdfPages) -> None:
     fig = plt.figure(figsize=(11.69, 8.27))
     page_header(
         fig,
@@ -586,7 +584,7 @@ def context_page(data: AtlasData, pdf: PdfPages) -> None:
     plot_school_points(ax, data.schools_utm)
     add_north_and_scale(ax, data.boundary_utm.total_bounds, km=5)
 
-    inset = fig.add_axes([0.70, 0.48, 0.25, 0.28])
+    inset = fig.add_axes([0.70, 0.52, 0.25, 0.24])
     data.country.plot(ax=inset, color="#DFE7E5", edgecolor=NAVY, linewidth=0.6)
     data.province.plot(ax=inset, color=OCHRE, edgecolor=NAVY, linewidth=0.5)
     centroid = data.boundary.geometry.iloc[0].centroid
@@ -595,7 +593,7 @@ def context_page(data: AtlasData, pdf: PdfPages) -> None:
     inset.set_title("Ubicación en Ecuador", fontsize=10, loc="left")
     clean_axis(inset)
 
-    stats_ax = fig.add_axes([0.70, 0.12, 0.25, 0.30])
+    stats_ax = fig.add_axes([0.70, 0.27, 0.25, 0.19])
     clean_axis(stats_ax)
     stats = [
         ("6.948", "habitantes censados en 2022"),
@@ -603,18 +601,68 @@ def context_page(data: AtlasData, pdf: PdfPages) -> None:
         ("2.302", "estudiantes registrados en 2024-2025"),
         ("~600 km", "de red OSM caminable modelada"),
     ]
-    y = 0.92
-    for value, label in stats:
+    positions = [(0.00, 0.82), (0.53, 0.82), (0.00, 0.32), (0.53, 0.32)]
+    for (value, label), (x, y) in zip(stats, positions, strict=True):
         stats_ax.text(
-            0.0, y, value, fontsize=19, color=NAVY, weight="bold", transform=stats_ax.transAxes
+            x, y, value, fontsize=16, color=NAVY, weight="bold", transform=stats_ax.transAxes
         )
-        stats_ax.text(0.0, y - 0.12, label, fontsize=8.3, color=MUTED, transform=stats_ax.transAxes)
-        y -= 0.24
+        stats_ax.text(
+            x,
+            y - 0.18,
+            textwrap.fill(label, width=21),
+            fontsize=6.8,
+            color=MUTED,
+            va="top",
+            transform=stats_ax.transAxes,
+        )
+
+    legend_ax = fig.add_axes([0.70, 0.095, 0.25, 0.14])
+    clean_axis(legend_ax)
+    legend_ax.text(
+        0,
+        1.0,
+        "COLORES DE LOS PUNTOS",
+        color=TEAL,
+        fontsize=8.5,
+        weight="bold",
+        va="top",
+        transform=legend_ax.transAxes,
+    )
+    handles = [
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="none",
+            markerfacecolor=color,
+            markeredgecolor=WHITE,
+            markersize=7,
+            label=label,
+        )
+        for label, color in LEVEL_COLORS.items()
+    ]
+    legend_ax.legend(
+        handles=handles,
+        loc="upper left",
+        bbox_to_anchor=(-0.03, 0.83),
+        frameon=False,
+        fontsize=6.8,
+        handletextpad=0.6,
+        borderaxespad=0,
+    )
+    legend_ax.text(
+        0,
+        0.01,
+        "EGB: Educación General Básica",
+        fontsize=6.8,
+        color=MUTED,
+        transform=legend_ax.transAxes,
+    )
     footer(fig, 2, f"Fuentes: {POPULATION_SOURCE}; {MINEDUC_SOURCE}; {OSM_SOURCE}.")
     save_page(fig, pdf, "01_contexto")
 
 
-def terrain_page(data: AtlasData, pdf: PdfPages) -> None:
+def terrain_page(data: MapSeriesData, pdf: PdfPages) -> None:
     fig = plt.figure(figsize=(11.69, 8.27))
     page_header(
         fig,
@@ -680,11 +728,11 @@ def terrain_page(data: AtlasData, pdf: PdfPages) -> None:
     save_page(fig, pdf, "02_relieve")
 
 
-def supply_page(data: AtlasData, pdf: PdfPages) -> None:
+def supply_page(data: MapSeriesData, pdf: PdfPages) -> None:
     fig = plt.figure(figsize=(11.69, 8.27))
     page_header(
         fig,
-        "03 · Oferta educativa",
+        "02 · Oferta educativa",
         "Diecinueve instituciones, tres geografías educativas",
         "El tamaño representa matrícula; el color identifica los niveles ofertados.",
     )
@@ -692,26 +740,19 @@ def supply_page(data: AtlasData, pdf: PdfPages) -> None:
     map_base(ax, data, roads_alpha=0.42)
     plot_school_points(ax, data.schools_utm, labels=True)
     add_north_and_scale(ax, data.boundary_utm.total_bounds, km=5)
-    handles = [
-        Line2D(
-            [0],
-            [0],
-            marker="o",
-            color="none",
-            markerfacecolor=color,
-            markeredgecolor=WHITE,
-            markersize=8,
-            label=label,
-        )
-        for label, color in LEVEL_COLORS.items()
-    ]
-    ax.legend(handles=handles, loc="lower right", frameon=False, fontsize=7.5)
-
     side = fig.add_axes([0.79, 0.12, 0.16, 0.60])
     clean_axis(side)
     counts = data.schools.groupby("oferta_resumida").size()
-    side.text(0, 1.0, "OFERTA 2024-2025", color=TEAL, fontsize=9, weight="bold", va="top")
-    side.text(0, 0.86, f"{int(counts.get('EGB', 0))}", fontsize=25, weight="bold", color=NAVY)
+    side.text(
+        0,
+        1.0,
+        "LOS COLORES REPRESENTAN",
+        color=TEAL,
+        fontsize=8.5,
+        weight="bold",
+        va="top",
+    )
+    side.text(0, 0.86, f"{int(counts.get('EGB', 0))}", fontsize=25, weight="bold", color=TEAL)
     side.text(0, 0.79, "solo EGB", fontsize=8.5, color=MUTED)
     side.text(
         0,
@@ -731,9 +772,10 @@ def supply_page(data: AtlasData, pdf: PdfPages) -> None:
         color=PURPLE,
     )
     side.text(0, 0.37, "EGB + Bachillerato", fontsize=8.5, color=MUTED)
+    side.text(0, 0.27, "EGB = Educación General Básica", fontsize=7.4, color=TEAL, weight="bold")
     side.text(
         0,
-        0.19,
+        0.17,
         (
             "La disponibilidad de bachillerato e inicial es mucho más "
             "concentrada que la oferta de EGB."
@@ -744,15 +786,15 @@ def supply_page(data: AtlasData, pdf: PdfPages) -> None:
         wrap=True,
         linespacing=1.35,
     )
-    footer(fig, 4, f"Fuentes: {MINEDUC_SOURCE}; coordenadas reconstruidas con {OSM_SOURCE}.")
-    save_page(fig, pdf, "03_oferta_educativa")
+    footer(fig, 3, f"Fuentes: {MINEDUC_SOURCE}; coordenadas reconstruidas con {OSM_SOURCE}.")
+    save_page(fig, pdf, "02_oferta_educativa")
 
 
-def history_page(data: AtlasData, pdf: PdfPages) -> None:
+def history_page(data: MapSeriesData, pdf: PdfPages) -> None:
     fig = plt.figure(figsize=(11.69, 8.27))
     page_header(
         fig,
-        "04 · Cambio temporal",
+        "03 · Cambio temporal",
         "La matrícula registrada cae más rápido que la infraestructura escolar",
         "La discontinuidad de 2022-2023 obliga a interpretar la serie con cautela.",
     )
@@ -802,11 +844,11 @@ def history_page(data: AtlasData, pdf: PdfPages) -> None:
         va="top",
         wrap=True,
     )
-    footer(fig, 5, f"Fuente: {MINEDUC_SOURCE}. Cálculos propios; valores preliminares.")
-    save_page(fig, pdf, "04_cambio_temporal")
+    footer(fig, 4, f"Fuente: {MINEDUC_SOURCE}. Cálculos propios; valores preliminares.")
+    save_page(fig, pdf, "03_cambio_temporal")
 
 
-def egb_page(data: AtlasData, pdf: PdfPages) -> None:
+def egb_page(data: MapSeriesData, pdf: PdfPages) -> None:
     fig = plt.figure(figsize=(11.69, 8.27))
     page_header(
         fig,
@@ -866,7 +908,7 @@ def egb_page(data: AtlasData, pdf: PdfPages) -> None:
     save_page(fig, pdf, "05_accesibilidad_egb")
 
 
-def level_comparison_page(data: AtlasData, pdf: PdfPages) -> None:
+def level_comparison_page(data: MapSeriesData, pdf: PdfPages) -> None:
     fig = plt.figure(figsize=(11.69, 8.27))
     page_header(
         fig,
@@ -901,12 +943,76 @@ def level_comparison_page(data: AtlasData, pdf: PdfPages) -> None:
     save_page(fig, pdf, "06_comparacion_niveles")
 
 
-def evidence_page(data: AtlasData, pdf: PdfPages) -> None:
+def access_overview_page(data: MapSeriesData, pdf: PdfPages) -> None:
+    fig = plt.figure(figsize=(11.69, 8.27))
+    page_header(
+        fig,
+        "04 · Accesibilidad potencial",
+        "El nivel educativo cambia la geografía del acceso",
+        "Tiempo mínimo por la red caminable, con velocidad ajustada por pendiente.",
+    )
+    axes = [
+        fig.add_axes([0.045, 0.22, 0.285, 0.52]),
+        fig.add_axes([0.357, 0.22, 0.285, 0.52]),
+        fig.add_axes([0.669, 0.22, 0.285, 0.52]),
+    ]
+    specs = [
+        ("egb", "EGB\nEducación General Básica"),
+        ("inicial", "Educación inicial"),
+        ("bachillerato", "Bachillerato"),
+    ]
+    for ax, (level, title) in zip(axes, specs, strict=True):
+        access_map(ax, data, level, title)
+    add_north_and_scale(axes[0], data.boundary_utm.total_bounds, km=5)
+
+    handles = [
+        Line2D([0], [0], color=color, lw=3, label=label)
+        for color, label in zip(TIME_COLORS, TIME_LABELS, strict=True)
+    ]
+    handles.append(
+        Line2D(
+            [0],
+            [0],
+            marker="^",
+            color="none",
+            markerfacecolor=NAVY,
+            markersize=7,
+            label="Institución que ofrece el nivel",
+        )
+    )
+    fig.legend(
+        handles=handles,
+        loc="lower center",
+        ncol=5,
+        frameon=False,
+        bbox_to_anchor=(0.5, 0.135),
+        fontsize=7.5,
+    )
+    fig.text(
+        0.5,
+        0.088,
+        (
+            "Escenario potencial: el color representa el tiempo hasta la institución más cercana. "
+            "No representa viajes observados ni cobertura de población."
+        ),
+        ha="center",
+        color=INK,
+        fontsize=7.6,
+    )
+    footer(
+        fig,
+        5,
+        f"Fuentes: {OSM_SOURCE}; {SRTM_SOURCE}; oferta: MINEDUC 2024-2025. Modelo preliminar.",
+    )
+    save_page(fig, pdf, "04_accesibilidad_por_nivel")
+
+
+def evidence_page(data: MapSeriesData, pdf: PdfPages) -> None:
     fig = plt.figure(figsize=(11.69, 8.27))
     page_header(
         fig,
         "07 · Evidencia y próximos pasos",
-        "Un atlas honesto separa resultados de hipótesis",
+        "Una lectura honesta separa resultados de hipótesis",
         (
             "La cartografía ya permite localizar el problema, pero la inferencia social "
             "requiere población censal y validación."
@@ -998,39 +1104,42 @@ def evidence_page(data: AtlasData, pdf: PdfPages) -> None:
     save_page(fig, pdf, "07_evidencia_y_limites")
 
 
-def social_card_map(data: AtlasData, level: str, title: str, subtitle: str, filename: str) -> None:
-    fig = plt.figure(figsize=(8, 10), facecolor=PAPER)
-    fig.text(0.07, 0.94, "ZUMBAHUA · ATLAS 2026", color=TEAL, fontsize=10, weight="bold")
-    fig.text(0.07, 0.875, title, color=NAVY, fontsize=23, weight="bold")
-    fig.text(0.07, 0.825, subtitle, color=MUTED, fontsize=9)
-    ax = fig.add_axes([0.07, 0.17, 0.86, 0.60])
-    access_map(ax, data, level, "")
-    handles = [
-        Line2D([0], [0], color=color, lw=3, label=label)
-        for color, label in zip(TIME_COLORS, TIME_LABELS, strict=True)
-    ]
-    ax.legend(handles=handles, loc="lower center", ncol=2, frameon=False, fontsize=8)
+def social_cover(data: MapSeriesData) -> None:
+    fig = plt.figure(figsize=(8, 10), facecolor=NAVY)
+    ax = fig.add_axes([0.39, 0.05, 0.58, 0.90])
+    ax.set_facecolor(NAVY)
+    data.boundary_utm.plot(ax=ax, color="#1F4355", edgecolor=MINT, linewidth=1.6)
+    data.roads.plot(ax=ax, color=MINT, linewidth=0.35, alpha=0.38)
+    data.schools_utm.plot(ax=ax, color=OCHRE, markersize=17, edgecolor=WHITE, linewidth=0.4)
+    set_map_bounds(ax, data.boundary_utm, pad=0.06)
+    clean_axis(ax)
+    ax.set_facecolor(NAVY)
+    fig.text(0.07, 0.91, "SERIE DE MAPAS · 2026", color=MINT, fontsize=10, weight="bold")
     fig.text(
         0.07,
-        0.075,
-        "Tiempo potencial por red caminable · pendiente SRTM · resultados preliminares",
-        color=INK,
-        fontsize=8,
+        0.72,
+        "Accesibilidad\neducativa en\nZumbahua",
+        color=WHITE,
+        fontsize=31,
+        weight="bold",
+        linespacing=0.95,
     )
     fig.text(
         0.07,
-        0.045,
-        "Fuentes: MINEDUC 2024-2025, OpenStreetMap y NASA/NGA SRTM.",
-        color=MUTED,
-        fontsize=7,
+        0.50,
+        "Oferta educativa, cambio\ny accesibilidad potencial",
+        color="#D7E5E5",
+        fontsize=11,
+        linespacing=1.35,
     )
-    fig.savefig(SOCIAL / filename, dpi=135, facecolor=PAPER)
+    fig.text(0.07, 0.06, "Pujilí · Cotopaxi · Ecuador", color="#AFC3C8", fontsize=8)
+    fig.savefig(SOCIAL / "00_portada.png", dpi=135, facecolor=NAVY)
     plt.close(fig)
 
 
-def social_history(data: AtlasData) -> None:
+def social_history(data: MapSeriesData) -> None:
     fig = plt.figure(figsize=(8, 10), facecolor=PAPER)
-    fig.text(0.07, 0.94, "ZUMBAHUA · ATLAS 2026", color=TEAL, fontsize=10, weight="bold")
+    fig.text(0.07, 0.94, "ZUMBAHUA · SERIE DE MAPAS 2026", color=TEAL, fontsize=10, weight="bold")
     fig.text(
         0.07,
         0.87,
@@ -1063,13 +1172,13 @@ def social_history(data: AtlasData) -> None:
         wrap=True,
     )
     fig.text(0.07, 0.045, f"Fuente: {MINEDUC_SOURCE}. Cálculos propios.", color=MUTED, fontsize=7)
-    fig.savefig(SOCIAL / "04_cambio_matricula.png", dpi=135, facecolor=PAPER)
+    fig.savefig(SOCIAL / "02_cambio_matricula.png", dpi=135, facecolor=PAPER)
     plt.close(fig)
 
 
-def social_supply(data: AtlasData) -> None:
+def social_supply(data: MapSeriesData) -> None:
     fig = plt.figure(figsize=(8, 10), facecolor=PAPER)
-    fig.text(0.07, 0.94, "ZUMBAHUA · ATLAS 2026", color=TEAL, fontsize=10, weight="bold")
+    fig.text(0.07, 0.94, "ZUMBAHUA · SERIE DE MAPAS 2026", color=TEAL, fontsize=10, weight="bold")
     fig.text(
         0.07,
         0.87,
@@ -1078,7 +1187,7 @@ def social_supply(data: AtlasData) -> None:
         fontsize=25,
         weight="bold",
     )
-    ax = fig.add_axes([0.07, 0.19, 0.86, 0.57])
+    ax = fig.add_axes([0.07, 0.28, 0.86, 0.48])
     map_base(ax, data, roads_alpha=0.35)
     plot_school_points(ax, data.schools_utm)
     handles = [
@@ -1093,15 +1202,23 @@ def social_supply(data: AtlasData) -> None:
         )
         for label, color in LEVEL_COLORS.items()
     ]
-    ax.legend(handles=handles, loc="lower center", frameon=False, fontsize=7.5)
+    fig.legend(
+        handles=handles,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.205),
+        frameon=False,
+        fontsize=7.5,
+        ncol=1,
+    )
     fig.text(
         0.07,
-        0.10,
+        0.105,
         "19 instituciones registradas · tamaño del círculo = matrícula",
         color=INK,
         fontsize=9,
         weight="bold",
     )
+    fig.text(0.07, 0.075, "EGB = Educación General Básica", color=TEAL, fontsize=8, weight="bold")
     fig.text(
         0.07,
         0.045,
@@ -1113,7 +1230,79 @@ def social_supply(data: AtlasData) -> None:
     plt.close(fig)
 
 
-def build_atlas() -> None:
+def social_access_comparison(data: MapSeriesData) -> None:
+    fig = plt.figure(figsize=(8, 10), facecolor=PAPER)
+    fig.text(0.07, 0.94, "ZUMBAHUA · SERIE DE MAPAS 2026", color=TEAL, fontsize=10, weight="bold")
+    fig.text(
+        0.07,
+        0.865,
+        "El nivel educativo cambia\nla geografía del acceso",
+        color=NAVY,
+        fontsize=23,
+        weight="bold",
+    )
+    axes = [
+        fig.add_axes([0.045, 0.31, 0.29, 0.41]),
+        fig.add_axes([0.355, 0.31, 0.29, 0.41]),
+        fig.add_axes([0.665, 0.31, 0.29, 0.41]),
+    ]
+    specs = [
+        ("egb", "EGB\nEducación General Básica"),
+        ("inicial", "Educación inicial"),
+        ("bachillerato", "Bachillerato"),
+    ]
+    for ax, (level, title) in zip(axes, specs, strict=True):
+        access_map(ax, data, level, title, title_fontsize=8)
+    handles = [
+        Line2D([0], [0], color=color, lw=3, label=label)
+        for color, label in zip(TIME_COLORS, TIME_LABELS, strict=True)
+    ]
+    handles.append(
+        Line2D(
+            [0],
+            [0],
+            marker="^",
+            color="none",
+            markerfacecolor=NAVY,
+            markersize=7,
+            label="Institución del nivel",
+        )
+    )
+    fig.legend(
+        handles=handles,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.205),
+        ncol=3,
+        frameon=False,
+        fontsize=7.5,
+    )
+    fig.text(
+        0.07,
+        0.105,
+        "Tiempo mínimo potencial por red caminable; velocidad ajustada por pendiente.",
+        color=INK,
+        fontsize=8.3,
+        weight="bold",
+    )
+    fig.text(
+        0.07,
+        0.073,
+        "Escenario modelado: no representa viajes observados ni cobertura de población.",
+        color=MUTED,
+        fontsize=7.6,
+    )
+    fig.text(
+        0.07,
+        0.04,
+        "Fuentes: MINEDUC 2024-2025, OpenStreetMap y NASA/NGA SRTM.",
+        color=MUTED,
+        fontsize=7,
+    )
+    fig.savefig(SOCIAL / "03_acceso_por_nivel.png", dpi=135, facecolor=PAPER)
+    plt.close(fig)
+
+
+def build_map_series() -> None:
     ensure_dirs()
     configure_style()
     ox.settings.use_cache = True
@@ -1122,46 +1311,23 @@ def build_atlas() -> None:
     with PdfPages(
         PDF_PATH,
         metadata={
-            "Title": "Atlas preliminar de accesibilidad educativa en Zumbahua 2026",
-            "Author": "Diego Santiago Cevallos Valencia",
+            "Title": "Accesibilidad educativa en Zumbahua: serie de mapas 2026",
             "Subject": "Accesibilidad educativa, territorio y reconstrucción cartográfica",
             "Keywords": "Zumbahua, educación, accesibilidad, SIG, Ecuador",
         },
     ) as pdf:
         cover_page(data, pdf)
         context_page(data, pdf)
-        terrain_page(data, pdf)
         supply_page(data, pdf)
         history_page(data, pdf)
-        egb_page(data, pdf)
-        level_comparison_page(data, pdf)
-        evidence_page(data, pdf)
+        access_overview_page(data, pdf)
 
+    social_cover(data)
     social_supply(data)
-    social_card_map(
-        data,
-        "egb",
-        "Acceso potencial a EGB",
-        "La oferta más extendida, pero con tramos periféricos todavía alejados.",
-        "02_accesibilidad_egb.png",
-    )
-    social_card_map(
-        data,
-        "inicial",
-        "Acceso potencial a inicial",
-        "Pocos destinos producen una geografía de acceso más concentrada.",
-        "03_accesibilidad_inicial.png",
-    )
-    social_card_map(
-        data,
-        "bachillerato",
-        "Acceso potencial a bachillerato",
-        "El nivel requerido importa tanto como la distancia a una escuela.",
-        "05_accesibilidad_bachillerato.png",
-    )
     social_history(data)
+    social_access_comparison(data)
     print(PDF_PATH)
 
 
 if __name__ == "__main__":
-    build_atlas()
+    build_map_series()

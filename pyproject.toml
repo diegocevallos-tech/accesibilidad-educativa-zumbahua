@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "zumbahua-access"
-version = "0.2.0"
+version = "0.2.1"
 description = "Análisis reproducible de accesibilidad espacial educativa en Zumbahua, Ecuador"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
