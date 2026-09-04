@@ -28,6 +28,14 @@ Una auditoría del registro administrativo oficial muestra:
 
 La matrícula registrada disminuye 51,2 %, mientras el número de docentes baja 8,8 %. Este resultado todavía no se interpreta como pérdida real de acceso: primero se comprobarán cambios de cobertura, definiciones administrativas, migración, cierres, fusiones y traslados de matrícula.
 
+## Atlas cartográfico preliminar
+
+[Abrir el atlas completo en PDF](atlas/atlas-zumbahua-2026.pdf)
+
+![Accesibilidad potencial a EGB](atlas/social/02_accesibilidad_egb.png)
+
+El atlas 2026 contiene ocho páginas sobre territorio, relieve, oferta por nivel, cambio de matrícula y tiempos potenciales por la red caminable. También incluye cinco tarjetas verticales listas para redes sociales en [`atlas/social/`](atlas/social/). Los mapas son preliminares: representan cobertura sobre la red de OpenStreetMap y todavía no cobertura de población censal.
+
 ## Diseño analítico
 
 ```text
@@ -90,9 +98,8 @@ El detalle de licencias, fechas y limitaciones está en [docs/fuentes_datos.md](
 
 ## Estado
 
-La versión `0.1.0` deja preparado el protocolo, el catálogo de datos, un inventario educativo inicial y el código para reproducir la serie administrativa. Los resultados espaciales se publicarán cuando finalicen la reconstrucción y validación de coordenadas, límites, red y población.
+La versión `0.2.0` incorpora un atlas cartográfico preliminar, coordenadas educativas reconstruidas, relieve SRTM y tiempos potenciales por red. La cobertura poblacional final se publicará cuando se integren sectores censales y concluya la validación de coordenadas y caminos.
 
 ## Licencia y cita
 
 El código se publica bajo licencia MIT. Los textos originales del proyecto pueden reutilizarse con atribución; cada fuente de terceros conserva su propia licencia. Consulte `CITATION.cff` para citar el repositorio.
-

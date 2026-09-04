@@ -8,7 +8,7 @@ authors:
 repository-code: "https://github.com/diegocevallos-tech/accesibilidad-educativa-zumbahua"
 url: "https://github.com/diegocevallos-tech/accesibilidad-educativa-zumbahua"
 license: MIT
-version: 0.1.0
+version: 0.2.0
 date-released: 2026-09-04
 keywords:
   - accesibilidad espacial
@@ -17,4 +17,3 @@ keywords:
   - justicia territorial
   - Ecuador
   - Zumbahua
-

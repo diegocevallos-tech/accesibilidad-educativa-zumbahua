@@ -8,6 +8,8 @@ __pycache__/
 .venv/
 dist/
 build/
+cache/
+tmp/
 
 # Jupyter
 .ipynb_checkpoints/
@@ -47,4 +49,3 @@ reports/figures/*.pdf
 Thumbs.db
 .vscode/
 .idea/
-
