@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Geospatial and downloaded data
+data/raw/**
+data/interim/**
+data/processed/**
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+*.gpkg
+*.parquet
+*.pbf
+*.graphml
+*.tif
+*.tiff
+*.shp
+*.shx
+*.dbf
+*.prj
+*.cpg
+
+# Local reports
+reports/figures/*.png
+reports/figures/*.svg
+reports/figures/*.pdf
+!reports/figures/.gitkeep
+
+# Operating systems and editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+

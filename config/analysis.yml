@@ -1,0 +1,46 @@
+reference_periods:
+  baseline: 2017-2018 Inicio
+  current: 2024-2025 Inicio
+education_levels:
+  - Inicial
+  - EGB
+  - Bachillerato
+travel_time_minutes:
+  - 15
+  - 30
+  - 45
+  - 60
+  - 90
+walking:
+  base_speed_kmh: 4.0
+  slope_adjustment: tobler_hiking_function
+  sensitivity_speed_kmh:
+    - 3.0
+    - 4.0
+    - 5.0
+motorized_scenario:
+  interpretation: hypothetical_without_public_transport_timetables
+  speeds_kmh:
+    primary: 40
+    secondary: 25
+    tertiary: 15
+    unclassified: 10
+population:
+  preferred_year: 2022
+  preferred_unit: census_sector
+  age_groups:
+    Inicial: [3, 4, 5]
+    EGB: [5, 14]
+    Bachillerato: [15, 17]
+metrics:
+  - nearest_school_travel_time
+  - cumulative_opportunities
+  - population_weighted_coverage
+  - balanced_floating_catchment_area
+  - gini_accessibility
+  - underserved_population
+quality_thresholds:
+  maximum_school_snap_distance_m: 500
+  maximum_unmatched_school_share: 0.10
+  sensitivity_speed_change: 0.20
+

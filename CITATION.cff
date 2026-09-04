@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "Si utiliza este proyecto, cite esta versión del repositorio."
+title: "Accesibilidad educativa en Zumbahua"
+type: software
+authors:
+  - family-names: "Cevallos Valencia"
+    given-names: "Diego Santiago"
+repository-code: "https://github.com/diegocevallos-tech/accesibilidad-educativa-zumbahua"
+url: "https://github.com/diegocevallos-tech/accesibilidad-educativa-zumbahua"
+license: MIT
+version: 0.1.0
+date-released: 2026-09-04
+keywords:
+  - accesibilidad espacial
+  - educación rural
+  - SIG
+  - justicia territorial
+  - Ecuador
+  - Zumbahua
+

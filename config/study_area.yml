@@ -1,0 +1,22 @@
+name: Zumbahua
+country: Ecuador
+province: Cotopaxi
+canton: Pujilí
+parish: Zumbahua
+crs_analysis: EPSG:32717
+crs_web: EPSG:4326
+osm:
+  relation_id: 3774470
+  area_id: 3603774470
+  centroid_lat: -0.9613268
+  centroid_lon: -78.8982864
+  bbox:
+    south: -1.0708598
+    west: -78.9933325
+    north: -0.8601922
+    east: -78.8079605
+boundary_priority:
+  - INEC_CPV_2022
+  - IGM_WFS
+  - OSM_relation_3774470
+

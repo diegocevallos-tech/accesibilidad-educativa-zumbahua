@@ -1,0 +1,50 @@
+sources:
+  mineduc_history:
+    title: Registro administrativo histórico 2009-2024 Inicio
+    publisher: Ministerio de Educación del Ecuador
+    landing_page: https://www.datosabiertos.gob.ec/dataset/registro-de-matricula-mineduc
+    url: https://www.datosabiertos.gob.ec/dataset/5d1838d2-4efb-44a3-8c36-eebb5a8f798a/resource/59db7bb5-eb6b-4a7a-a06a-d1f93ac7506a/download/registro-administrativo-historico_2009-2024-inicio.csv
+    license: CC BY-SA
+    status: verified_2026-09-04
+  mineduc_typologies_2024_2025:
+    title: Instituciones educativas 2024-2025, tipologías y subtipologías
+    publisher: Ministerio de Educación del Ecuador
+    landing_page: https://educacion.gob.ec/base-de-datos/
+    url: https://educacion.gob.ec/wp-content/uploads/downloads/2025/04/Registros-administrativos_2024-2025_Tipologias.xlsx
+    license: verify_on_landing_page
+    status: verified_2026-09-04
+  seibe_2022:
+    title: Instituciones del Sistema de Educación Intercultural Bilingüe
+    publisher: Secretaría de Educación Intercultural Bilingüe y la Etnoeducación
+    landing_page: https://www.datosabiertos.gob.ec/dataset/instituciones-educativas-del-sistema-de-educacion-intercultural-bilingue
+    url: https://www.datosabiertos.gob.ec/dataset/681f9ed6-0536-44b8-b771-903506c822a1/resource/65d8aa62-9483-4fe9-b8ff-ec5772406aca/download/seibe_institucioneducativa_2022dic.csv
+    license: CC BY
+    status: supplemental
+  census_2022:
+    title: Censo de Población y Vivienda 2022
+    publisher: Instituto Nacional de Estadística y Censos
+    landing_page: https://www.censoecuador.gob.ec/resultados-censo/
+    data_page: https://www.censoecuador.gob.ec/data-censo-ecuador/
+    spatial_resolution: canton_sector_block_or_locality
+    status: acquisition_pending
+  igm:
+    title: Geoportal del Instituto Geográfico Militar
+    publisher: Instituto Geográfico Militar
+    landing_page: https://www.geoportaligm.gob.ec/geoportal-igm/
+    services: WMS_WFS_WMTS
+    status: layer_selection_pending
+  osm:
+    title: OpenStreetMap Ecuador
+    publisher: OpenStreetMap contributors
+    landing_page: https://www.openstreetmap.org/
+    extract: https://download.geofabrik.de/south-america/ecuador.html
+    license: ODbL
+    snapshot_required: true
+    status: boundary_verified_network_pending
+  copernicus_dem:
+    title: Copernicus DEM GLO-30
+    publisher: Copernicus Data Space Ecosystem
+    landing_page: https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM
+    license: ESA_user_license
+    status: optional_account_required
+
